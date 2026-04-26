@@ -1,35 +1,101 @@
-# ⚙️ AbrigosRS — Backend
+# 🌊 AbrigosRS — Plataforma de Abrigos em Situações de Enchente
 
-> API REST para a plataforma de abrigos em situações de enchente no Rio Grande do Sul.
+> Conectando pessoas afetadas por enchentes com abrigos disponíveis no Rio Grande do Sul, em tempo real.
 
-🔗 **API em produção:** [https://abrigos-rs-backend.onrender.com](https://abrigos-rs-backend.onrender.com)  
-📋 **Documentação Postman:** [https://documenter.getpostman.com/view/47434037/2sBXqGr2Nt](https://documenter.getpostman.com/view/47434037/2sBXqGr2Nt)  
-🖥️ **Repositório Frontend:** [https://github.com/SEU_USUARIO/abrigos-rs-frontend](https://github.com/SEU_USUARIO/abrigos-rs-frontend)
-
----
-
-## Sobre o projeto
-
-Este é o backend da plataforma **AbrigosRS**, desenvolvido como parte de um desafio técnico sobre enchentes no Brasil. A API é responsável por gerenciar abrigos, necessidades e autenticação administrativa.
+🔗 **Frontend:** [https://abrigos-rs-frontend.vercel.app](https://abrigos-rs-frontend.vercel.app)  
+🔗 **Backend:** [https://abrigos-rs-backend.onrender.com](https://abrigos-rs-backend.onrender.com)  
+📋 **Documentação API:** [https://documenter.getpostman.com/view/47434037/2sBXqGr2Nt](https://documenter.getpostman.com/view/47434037/2sBXqGr2Nt)
 
 ---
 
-## Tecnologias
+## 1 - Apresentação da Ideia
 
-| Tecnologia | Uso |
-|-----------|-----|
-| Node.js 18 | Runtime |
-| Express 4 | Framework HTTP |
-| PostgreSQL | Banco de dados |
-| node-postgres (pg) | Driver do banco |
-| bcrypt | Criptografia de senhas |
-| jsonwebtoken (JWT) | Autenticação |
-| dotenv | Variáveis de ambiente |
-| cors | Liberação de origens |
+Esse é o meu projeto. A ideia surgiu a partir do desafio sobre enchentes no Brasil. Pensando nesse cenário, decidi focar no problema de **falta de informação sobre abrigos disponíveis**.
+
+Durante uma enchente, as pessoas precisam sair de casa rapidamente e não sabem para onde ir. A informação sobre abrigos existe, mas está espalhada em grupos de WhatsApp, redes sociais e transmissões de rádio — sem nenhuma centralização ou atualização em tempo real.
+
+O **AbrigosRS** nasceu da necessidade de ter um único lugar onde qualquer pessoa com acesso à internet consiga encontrar rapidamente um abrigo disponível, com informações confiáveis e atualizadas.
 
 ---
 
-## Estrutura do Projeto
+## 2 - Problema Escolhido
+
+**Caso 1 — Falta de Informação sobre Abrigos.**
+
+Durante enchentes, famílias em situação de emergência precisam encontrar um abrigo com urgência. Os principais problemas identificados foram:
+
+- Informações espalhadas em diferentes canais (WhatsApp, Instagram, rádio)
+- Dados de vagas desatualizados — abrigos lotados continuam recebendo pessoas enquanto outros com vagas ficam vazios
+- Pessoas com necessidades específicas (animais de estimação, cadeirantes) não sabem qual abrigo aceita sua situação
+- Ausência de um canal centralizado e confiável para voluntários e ONGs organizarem doações
+
+---
+
+## 3 - Solução Proposta
+
+O **AbrigosRS** é uma plataforma web que centraliza informações sobre abrigos em tempo real, com dois perfis de acesso:
+
+### 👥 Acesso Público (qualquer pessoa)
+- Visualizar todos os abrigos aprovados com informações de vagas, recursos e localização
+- Filtrar por cidade, status, vagas disponíveis, aceite de animais e acessibilidade PCD
+- Ver as necessidades de cada abrigo (itens para doação)
+- Cadastrar um novo abrigo (fica pendente até aprovação do admin)
+
+### 🔒 Acesso Administrativo (admin com login)
+- Aprovar ou rejeitar abrigos cadastrados pelo público
+- Editar informações dos abrigos
+- Atualizar vagas disponíveis em tempo real
+- Registrar e gerenciar necessidades (itens urgentes) de cada abrigo
+- Painel com visão geral de todos os abrigos e estatísticas
+
+### Diferenciais do sistema
+- **Aprovação obrigatória** — nenhum abrigo aparece sem validação do admin, garantindo confiabilidade
+- **Atualização de vagas em tempo real** — o status muda automaticamente para "lotado" quando vagas chegam a zero
+- **Autenticação segura** — senha com bcrypt (cost 12) e tokens JWT com expiração configurável
+- **Banco de dados com histórico** — triggers registram automaticamente toda alteração de vagas
+
+---
+
+## 4 - Estrutura do Sistema
+
+### 🖥️ Front-end
+
+**Tecnologia:** React 18 + CSS puro + Axios  
+**Deploy:** Vercel
+
+```
+src/
+├── App.jsx                  # Componente raiz com navegação e menu responsivo
+├── App.css                  # Estilos globais com tema azul profundo
+├── index.js                 # Entrada da aplicação
+├── context/
+│   └── AuthContext.jsx      # Estado global de autenticação (token JWT)
+├── pages/
+│   ├── Home.jsx             # Página inicial com estatísticas em tempo real
+│   ├── Abrigos.jsx          # Listagem com filtros e cadastro público
+│   ├── AbrigoDetalhe.jsx    # Detalhes do abrigo e necessidades (somente leitura)
+│   ├── Necessidades.jsx     # Lista geral de necessidades por urgência
+│   ├── Login.jsx            # Tela de login administrativo
+│   └── Admin.jsx            # Painel admin com 4 abas
+├── components/
+│   ├── CardAbrigo.jsx       # Card reutilizável com barra de ocupação
+│   └── FormAbrigo.jsx       # Formulário de cadastro de abrigo
+└── services/
+    └── api.js               # Integração com a API via Axios
+```
+
+**Páginas principais:**
+- **Início** — estatísticas gerais (total de abrigos, vagas disponíveis, lotados, capacidade)
+- **Abrigos** — listagem com filtros e formulário de cadastro público
+- **Necessidades** — itens necessários ordenados por urgência (crítica → baixa)
+- **Painel Admin** — aprovação de pendentes, edição, gerenciamento de necessidades e alterar senha
+
+---
+
+### ⚙️ Back-end
+
+**Tecnologia:** Node.js + Express + bcrypt + jsonwebtoken  
+**Deploy:** Render
 
 ```
 src/
@@ -49,46 +115,14 @@ src/
     └── necessidadesRoutes.js      # /api/necessidades
 ```
 
----
-
-## Endpoints da API
-
-### 🔐 Autenticação
+**Endpoints da API:**
 
 | Método | Rota | Acesso | Descrição |
 |--------|------|--------|-----------|
-| `POST` | `/api/auth/login` | Público | Login do admin — retorna JWT |
+| `POST` | `/api/auth/login` | Público | Login do admin |
 | `GET` | `/api/auth/perfil` | Admin | Dados do admin logado |
-| `POST` | `/api/auth/alterar-senha` | Admin | Altera a senha do admin |
-
-**Exemplo de login:**
-```json
-POST /api/auth/login
-{
-  "email": "admin@abrigosrs.com",
-  "senha": "admin123"
-}
-```
-
-**Resposta:**
-```json
-{
-  "sucesso": true,
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "admin": { "id": 1, "nome": "Administrador", "email": "admin@abrigosrs.com" }
-}
-```
-
-> Para rotas protegidas, envie o token no header:  
-> `Authorization: Bearer SEU_TOKEN`
-
----
-
-### 🏠 Abrigos
-
-| Método | Rota | Acesso | Descrição |
-|--------|------|--------|-----------|
-| `GET` | `/api/abrigos` | Público | Lista abrigos aprovados |
+| `POST` | `/api/auth/alterar-senha` | Admin | Altera senha |
+| `GET` | `/api/abrigos` | Público | Lista abrigos aprovados (com filtros) |
 | `GET` | `/api/abrigos/stats` | Público | Estatísticas gerais |
 | `GET` | `/api/abrigos/:id` | Público | Busca abrigo por ID |
 | `POST` | `/api/abrigos` | Público | Cadastra abrigo (entra como pendente) |
@@ -96,125 +130,163 @@ POST /api/auth/login
 | `PUT` | `/api/abrigos/:id` | Admin | Atualiza abrigo completo |
 | `PATCH` | `/api/abrigos/:id/vagas` | Admin | Atualiza vagas disponíveis |
 | `DELETE` | `/api/abrigos/:id` | Admin | Remove abrigo |
-
-**Filtros disponíveis no GET `/api/abrigos`:**
-```
-?cidade=Porto Alegre
-?status=ativo | lotado | inativo
-?com_vagas=true
-?aceita_animais=true
-?aceita_pcd=true
-?pendentes=true  (somente admin)
-```
-
----
-
-### 📦 Necessidades
-
-| Método | Rota | Acesso | Descrição |
-|--------|------|--------|-----------|
-| `GET` | `/api/necessidades` | Público | Lista necessidades |
+| `GET` | `/api/necessidades` | Público | Lista necessidades (com filtros) |
 | `POST` | `/api/necessidades` | Admin | Registra necessidade |
-| `DELETE` | `/api/necessidades/:id` | Admin | Marca como atendida |
+| `DELETE` | `/api/necessidades/:id` | Admin | Marca necessidade como atendida |
 
-**Filtros disponíveis no GET `/api/necessidades`:**
-```
-?urgencia=baixa | media | alta | critica
-?abrigo_id=1
+**Variáveis de ambiente:**
+```env
+DATABASE_URL=postgresql://...   # URL do banco (Render fornece automaticamente)
+JWT_SECRET=chave_secreta_longa  # Chave para assinar os tokens JWT
+JWT_EXPIRES_IN=8h               # Tempo de expiração do token
+NODE_ENV=production
 ```
 
 ---
 
-## Banco de Dados
+### 🗄️ Banco de Dados
+
+**Tecnologia:** PostgreSQL  
+**Deploy:** Render (PostgreSQL gerenciado)
 
 **Tabelas:**
-- `admins` — administradores com senha bcrypt
-- `abrigos` — abrigos com controle de aprovação e vagas
-- `necessidades` — itens necessários por abrigo com nível de urgência
-- `historico_vagas` — registro automático de alterações de vagas (trigger)
+
+#### `admins`
+Administradores do sistema com senha criptografada via bcrypt.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | SERIAL PK | Identificador único |
+| `nome` | VARCHAR | Nome do administrador |
+| `email` | VARCHAR UNIQUE | Email de acesso |
+| `senha_hash` | VARCHAR | Senha com bcrypt (cost 12) |
+| `criado_em` | TIMESTAMP | Data de criação |
+
+#### `abrigos`
+Dados completos de cada abrigo com controle de aprovação e vagas.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | SERIAL PK | Identificador único |
+| `nome` | VARCHAR | Nome do abrigo |
+| `endereco` | VARCHAR | Endereço completo |
+| `cidade` | VARCHAR | Cidade |
+| `estado` | VARCHAR(2) | Estado (padrão: RS) |
+| `telefone` | VARCHAR | Contato |
+| `responsavel` | VARCHAR | Nome do responsável |
+| `capacidade_total` | INTEGER | Total de vagas |
+| `vagas_disponiveis` | INTEGER | Vagas disponíveis agora |
+| `aceita_animais` | BOOLEAN | Aceita animais de estimação |
+| `aceita_pcd` | BOOLEAN | Acessível para PCD |
+| `tem_banheiro` | BOOLEAN | Possui banheiro |
+| `tem_alimentacao` | BOOLEAN | Fornece alimentação |
+| `observacoes` | TEXT | Informações adicionais |
+| `status` | VARCHAR | `ativo`, `lotado` ou `inativo` |
+| `aprovado` | BOOLEAN | Aprovado pelo admin |
+| `aprovado_em` | TIMESTAMP | Data de aprovação |
+| `aprovado_por` | FK → admins | Admin que aprovou |
+| `criado_em` | TIMESTAMP | Data de criação |
+| `atualizado_em` | TIMESTAMP | Última atualização (trigger) |
+
+#### `necessidades`
+Itens que cada abrigo precisa receber como doação.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | SERIAL PK | Identificador único |
+| `abrigo_id` | FK → abrigos | Abrigo relacionado |
+| `item` | VARCHAR | Item necessário |
+| `quantidade` | INTEGER | Quantidade necessária |
+| `urgencia` | VARCHAR | `baixa`, `media`, `alta` ou `critica` |
+| `criado_em` | TIMESTAMP | Data de criação |
+
+#### `historico_vagas`
+Registro automático de todas as alterações de vagas.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | SERIAL PK | Identificador único |
+| `abrigo_id` | FK → abrigos | Abrigo relacionado |
+| `vagas_anteriores` | INTEGER | Vagas antes da alteração |
+| `vagas_novas` | INTEGER | Vagas após a alteração |
+| `alterado_em` | TIMESTAMP | Momento da alteração |
 
 **Triggers:**
-- `atualizar_timestamp` — atualiza `atualizado_em` a cada modificação
-- `registrar_historico_vagas` — registra toda alteração de vagas
+- `atualizar_timestamp` — atualiza `atualizado_em` automaticamente a cada modificação
+- `registrar_historico_vagas` — registra toda alteração de vagas em `historico_vagas`
 
 ---
 
-## Como Rodar Localmente
+## 5 - Como Rodar Localmente
 
 ### Pré-requisitos
 - Node.js 18+
 - PostgreSQL 14+
 
-### 1. Clone o repositório
-```bash
-git clone https://github.com/SEU_USUARIO/abrigos-rs-backend.git
-cd abrigos-rs-backend
-```
-
-### 2. Instale as dependências
-```bash
-npm install
-```
-
-### 3. Configure o banco de dados
+### Banco de Dados
 ```bash
 sudo -u postgres psql -c "CREATE DATABASE abrigos_db;"
 sudo -u postgres psql -d abrigos_db -f src/db/schema.sql
 ```
 
-### 4. Configure as variáveis de ambiente
+### Back-end
 ```bash
 cp .env.example .env
+# Edite o .env com suas credenciais
+npm install
+npm run dev
+# Servidor em http://localhost:3001
 ```
 
-Edite o `.env`:
-```env
-PORT=3001
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=abrigos_db
-DB_USER=postgres
-DB_PASSWORD=sua_senha
-JWT_SECRET=chave_secreta_longa_e_aleatoria
-JWT_EXPIRES_IN=8h
-```
-
-### 5. Inicie o servidor
+### Front-end (repositório separado)
 ```bash
-npm run dev       # desenvolvimento
-npm start         # produção
+npm install
+npm start
+# Aplicação em http://localhost:3000
 ```
 
-Servidor rodando em `http://localhost:3001`
+---
+
+## 6 - Documentação da API (Postman)
+
+Acesse a documentação completa online: **[https://documenter.getpostman.com/view/47434037/2sBXqGr2Nt](https://documenter.getpostman.com/view/47434037/2sBXqGr2Nt)**
+
+Ou importe o arquivo `AbrigosRS.postman_collection.json` localmente no Postman.
+
+**Como importar:**
+1. Abra o Postman
+2. Clique em **Import**
+3. Selecione o arquivo `AbrigosRS.postman_collection.json`
+4. Todos os endpoints estarão prontos com exemplos de corpo e headers
+
+**Credenciais para teste:**
+```
+Email: admin@abrigosrs.com
+Senha: admin123
+```
 
 ---
 
-## Deploy (Render)
+## 7 - Tecnologias Utilizadas
 
-### Variáveis de ambiente no Render
-
-| Key | Valor |
-|-----|-------|
-| `DATABASE_URL` | URL interna do PostgreSQL do Render |
-| `JWT_SECRET` | Chave secreta gerada com crypto |
-| `JWT_EXPIRES_IN` | `8h` |
-| `NODE_ENV` | `production` |
-
-### Configurações do Web Service
-
-| Campo | Valor |
-|-------|-------|
-| Build Command | `npm install` |
-| Start Command | `npm start` |
-| Runtime | `Node` |
+| Camada | Tecnologia |
+|--------|-----------|
+| Front-end | React 18 + CSS puro |
+| HTTP Client | Axios |
+| Back-end | Node.js + Express |
+| Autenticação | JSON Web Token (JWT) |
+| Criptografia | bcrypt (cost 12) |
+| Banco de dados | PostgreSQL |
+| Deploy Front-end | Vercel |
+| Deploy Back-end | Render |
 
 ---
 
-## Segurança
+## 8 - Segurança
 
 - Senhas criptografadas com **bcrypt** (cost factor 12)
 - Autenticação via **JWT** com expiração de 8 horas
-- Rotas administrativas protegidas por middleware
-- Variáveis sensíveis isoladas em `.env`
-- SSL obrigatório na conexão com banco em produção
-- Abrigos passam por **aprovação manual** antes de aparecer publicamente
+- Rotas administrativas protegidas por middleware de autenticação
+- Variáveis sensíveis isoladas em `.env` (nunca sobem para o GitHub)
+- SSL obrigatório na conexão com o banco em produção
+- Abrigos cadastrados pelo público passam por **aprovação manual** antes de aparecer no site
